@@ -58,6 +58,53 @@ gastown-gui doctor
 
 ---
 
+## Nix / NixOS
+
+### Build with Nix flake
+
+```bash
+nix build .#gastown-gui
+./result/bin/gastown-gui start
+```
+
+### Run as a NixOS service
+
+Import the module from this repository's flake and enable it:
+
+```nix
+{
+  inputs.gastown-gui.url = "github:web3dev1337/gastown-gui";
+
+  outputs = { self, nixpkgs, gastown-gui, ... }: {
+    nixosConfigurations.my-host = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        gastown-gui.nixosModules.deployment
+        ({
+          services.gastown-gui = {
+            enable = true;
+            host = "127.0.0.1";
+            port = 7667;
+            # Optional: where your Gas Town rigs live
+            # gtRoot = "/var/lib/gastown/gt";
+            # Optional: extra env vars
+            # environment = { CORS_ORIGINS = "http://localhost:3000"; };
+          };
+        })
+      ];
+    };
+  };
+}
+```
+
+Then rebuild your system:
+
+```bash
+sudo nixos-rebuild switch --flake .#my-host
+```
+
+---
+
 ## Features
 
 - **Rig Management** - Add, view, and organize project repositories
