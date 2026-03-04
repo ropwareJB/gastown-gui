@@ -12,6 +12,12 @@ in {
       description = "Gastown GUI package to run.";
     };
 
+    gtPackage = lib.mkOption {
+      type = lib.types.nullOr lib.types.package;
+      default = null;
+      description = "Optional package that provides the gt binary.";
+    };
+
     host = lib.mkOption {
       type = lib.types.str;
       default = "127.0.0.1";
@@ -44,6 +50,7 @@ in {
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
+      path = [ pkgs.nodejs ] ++ lib.optional (cfg.gtPackage != null) cfg.gtPackage;
       environment = cfg.environment // lib.optionalAttrs (cfg.gtRoot != null) {
         GT_ROOT = toString cfg.gtRoot;
       };
