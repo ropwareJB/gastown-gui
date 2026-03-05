@@ -36,6 +36,18 @@ in {
       description = "Port for the gastown-gui HTTP server.";
     };
 
+    user = lib.mkOption {
+      type = lib.types.str;
+      default = "gastown";
+      description = "User to run service under";
+    };
+
+    group = lib.mkOption {
+      type = lib.types.str;
+      default = "gastown";
+      description = "Group to run service under";
+    };
+
     gtRoot = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
@@ -66,7 +78,9 @@ in {
       serviceConfig = {
         Type = "simple";
         ExecStart = "${lib.getExe cfg.package} start --host ${cfg.host} --port ${toString cfg.port}";
-        DynamicUser = true;
+        DynamicUser = false;
+        User = cfg.user;
+        Group = cfg.group;
         Restart = "on-failure";
         RestartSec = "2s";
       };
